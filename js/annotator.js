@@ -7,6 +7,8 @@
  * Requires: Tipped.js
  */
 
+$ = jQuery;
+
 class Annotator {
   resultSelector = "#annotator-result"; // Where we put the annotated text when you click "annotate"
 

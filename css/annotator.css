@@ -1049,7 +1049,7 @@ a.mand-def-more-link {
 .mand-block-simplified:hover,
 .mand-block-traditional:hover {
   cursor: pointer;
-  cursor: url(../images/pen.png), auto;
+  cursor: url(../img/pen.png), auto;
 }
 
 .mand-block.mand-highlight:hover {

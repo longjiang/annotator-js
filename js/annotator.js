@@ -655,7 +655,7 @@ class Annotator {
       $(annotator.resultSelector).show();
 
       var textToAnnotate = $(".annotator-text-area").html();
-      if (annotator.tinymce) {
+      if (annotator.tinymce && annotator.tinymce.activeEditor) {
         annotator.tinymce.activeEditor.getContent({ format: "raw" });
       }
 
@@ -963,9 +963,11 @@ class Annotator {
   }
 }
 
-$(document).ready(function() {
-  annotator = new Annotator();
-  annotator.annotateBySelector(".add-pinyin, .add-pinyin *", function() {
-    // success
+(function($) {
+  $(document).ready(function() {
+    annotator = new Annotator();
+    annotator.annotateBySelector(".add-pinyin, .add-pinyin *", function() {
+      // success
+    });
   });
-});
+})(jQuery);

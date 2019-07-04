@@ -8,7 +8,7 @@
  */
 
 class Annotator {
-  selector; // .add-pinyin by default
+  resultSelector = "#annotator-result"; // Where we put the annotated text when you click "annotate"
 
   // server = "//mand.chinesezerotohero.com";
   server = "//mand.local:8888";
@@ -128,6 +128,11 @@ class Annotator {
     annotator.primaryLine = annotator.dictionary.primaryLine;
 
     annotator.timeout = annotator.maxNumCharsPerRequest * 0;
+
+    if (typeof tinymce !== "undefined") {
+      // If annotator.tinymce is
+      annotator.tinymce = tinymce; // If annotator.tinymce 4 is loaded - //cdn.annotator.tinymce.com/4/annotator.tinymce.min.js
+    }
 
     annotator.attachEventHandlers();
   }
@@ -267,8 +272,10 @@ class Annotator {
         }
         var $next = $(this).next();
         if (index == 0 && $next.is(".mand-block")) {
-          if (dictionary.addUrl != null && annotator.tinyMCE) {
-            comment = tinyMCE.activeEditor.getContent({ format: "text" });
+          if (dictionary.addUrl != null && annotator.tinymce) {
+            comment = annotator.tinymce.activeEditor.getContent({
+              format: "text"
+            });
             html += '<a href="' + dictionary.addUrl;
             html +=
               $(this).attr("data-traditional-0") +
@@ -330,7 +337,7 @@ class Annotator {
   toggleAnnotationLines(e) {
     var annotator = this;
     $(".annotator-options input").each(function() {
-      attribute = $(this).attr("name");
+      var attribute = $(this).attr("name");
       if ($(this).is(":checked")) {
         annotator.showAnnotationLine(attribute);
       } else {
@@ -496,7 +503,7 @@ class Annotator {
       return node.nodeValue;
     });
 
-    function annotateWithJSON(nodes) {
+    function annotateWithJSON(nodes, callback) {
       return function(dataForNodes) {
         var i;
         for (i = 0; i < dataForNodes.length; i++) {
@@ -538,7 +545,7 @@ class Annotator {
       {
         "text[]": stringsToSend
       },
-      annotateWithJSON(nodes),
+      annotateWithJSON(nodes, callback),
       "json"
     );
   }
@@ -609,9 +616,8 @@ class Annotator {
 
   annotateBySelector(selector, callback) {
     var annotator = this;
-    annotator.selector = selector;
     (function addAnnotationTasksForEachChildNodes() {
-      $(annotator.selector).each(function() {
+      $(selector).each(function() {
         var children = this.childNodes;
         for (var i = 0; i < children.length; i++) {
           annotator.addAnnotationTask(children[i]);
@@ -639,72 +645,83 @@ class Annotator {
   }
 
   //TODO: improve name of function
-  doAnnotate(e) {
+  doAnnotate() {
     var annotator = this;
-    if (e) e.preventDefault();
+    return function(e) {
+      if (e) e.preventDefault();
 
-    $(".title").hide();
+      $(".title").hide();
 
-    $(annotator.selector).show();
+      $(annotator.resultSelector).show();
 
-    textToAnnotate = tinyMCE.activeEditor.getContent({ format: "raw" });
-
-    (function addLineBreaks() {
-      // If they already are marking up html, then don't add any p tags
-      if (textToAnnotate.indexOf("</") == -1) {
-        // Replace double line breaks with p tags
-        textToAnnotate = textToAnnotate.replace(
-          /(\r\n\r\n|\n\n|\r\r)/gm,
-          "</p><p>"
-        );
-        // Replace single line breaks with br tags
-        textToAnnotate = textToAnnotate.replace(/(\r\n|\n|\r)/gm, "<br>");
-        // Wrap with a p tag
-        textToAnnotate = "<p>" + textToAnnotate + "</p>";
+      var textToAnnotate = $(".annotator-text-area").html();
+      if (annotator.tinymce) {
+        annotator.tinymce.activeEditor.getContent({ format: "raw" });
       }
-    })();
 
-    // var stripLinks = function(text) {
-    //     return text.replace(/<a[^>]*>(.*?)<\/a>/g, '$1');
-    // }
-    $(annotator.selector).html(textToAnnotate);
+      (function addLineBreaks() {
+        // If they already are marking up html, then don't add any p tags
+        if (textToAnnotate.indexOf("</") == -1) {
+          // Replace double line breaks with p tags
+          textToAnnotate = textToAnnotate.replace(
+            /(\r\n\r\n|\n\n|\r\r)/gm,
+            "</p><p>"
+          );
+          // Replace single line breaks with br tags
+          textToAnnotate = textToAnnotate.replace(/(\r\n|\n|\r)/gm, "<br>");
+          // Wrap with a p tag
+          textToAnnotate = "<p>" + textToAnnotate + "</p>";
+        }
+      })();
 
-    (function showAnnotationArea() {
-      if (
-        $(annotator.selector)
-          .parent()
-          .css("display") == "none"
-      ) {
-        $(annotator.selector)
-          .parent()
-          .show();
-      }
-    })();
+      // var stripLinks = function(text) {
+      //     return text.replace(/<a[^>]*>(.*?)<\/a>/g, '$1');
+      // }
+      $(annotator.resultSelector).html(textToAnnotate);
 
-    // Hide the download link until the document is ready to download
-    $("#annotator-file-buttons").hide();
+      (function showAnnotationArea() {
+        if (
+          $(annotator.resultSelector)
+            .parent()
+            .css("display") == "none"
+        ) {
+          $(annotator.resultSelector)
+            .parent()
+            .show();
+        }
+      })();
 
-    // Most of the time they don't have html, so p tags are automatically added, do these first
-    annotateBySelector(annotator.selector + " p");
+      // Hide the download link until the document is ready to download
+      $("#annotator-file-buttons").hide();
 
-    $(".annotator-toolbars").css("display", "block");
+      // Most of the time they don't have html, so p tags are automatically added, do these first
+      annotator.annotateBySelector(annotator.resultSelector + " p");
 
-    // Then do the rest of html if there is any
-    annotateBySelector(annotator.selector);
-    annotateBySelector(annotator.selector + " *");
+      $(".annotator-toolbars").css("display", "block");
+
+      // Then do the rest of html if there is any
+      annotator.annotateBySelector(
+        annotator.resultSelector + ", " + annotator.resultSelector + " *",
+        function() {
+          // Success
+        }
+      );
+    };
   }
 
   toggleEditor(e) {
     var annotator = this;
-    if (e) e.preventDefault();
-    $(".hide-btn").html(
-      $(".annotator-form").css("display") == "none"
-        ? '<i class="glyphicon glyphicon-collapse-down"></i>' +
-            annotator.dictionary.tHide
-        : '<i class="glyphicon glyphicon-collapse-up"></i>' +
-            annotator.dictionary.tShow
-    );
-    $(".annotator-form").toggle({ duration: 500 });
+    return function(e) {
+      if (e) e.preventDefault();
+      $(".hide-btn").html(
+        $(".annotator-form").css("display") == "none"
+          ? '<i class="glyphicon glyphicon-collapse-down"></i>' +
+              annotator.dictionary.tHide
+          : '<i class="glyphicon glyphicon-collapse-up"></i>' +
+              annotator.dictionary.tShow
+      );
+      $(".annotator-form").toggle({ duration: 500 });
+    };
   }
 
   attachSpeakButtonEventListener() {
@@ -713,7 +730,10 @@ class Annotator {
     $("#annotator-speak-button").click(function(e) {
       if (e) e.preventDefault();
       if ($(this).text() == annotator.dictionary.tSpeak) {
-        var text = tinyMCE.activeEditor.getContent({ format: "text" });
+        var text = $(".annotator-text-area").html();
+        if (annotator.tinymce) {
+          text = annotator.tinymce.activeEditor.getContent({ format: "text" });
+        }
         if (!window.speechSynthesis.speaking) {
           annotator.speak(text);
         } else {
@@ -759,7 +779,7 @@ class Annotator {
       $.post(
         "/annotator/docx",
         {
-          text: $(annotator.selector).html()
+          text: $(annotator.resultSelector).html()
         },
         updateDownloadLink,
         "json"
@@ -827,7 +847,7 @@ class Annotator {
       // Show them below the annotation result
 
       if ($(".vocab-list").length == 0) {
-        $(annotator.selector).after(
+        $(annotator.resultSelector).after(
           '<div class="vocab-list" id="vocab-list"><div class="user-highlighted"></div><div class="auto-highlighted"></div></div>'
         );
       }
@@ -871,14 +891,14 @@ class Annotator {
 
   attachAnnotateButtonEventListener() {
     var annotator = this;
-    $(".annotator-convert-button").click(annotator.doAnnotate);
+    $(".annotator-convert-button").click(annotator.doAnnotate());
   }
 
   attachMakeCopiableButtonEventListener() {
     var annotator = this;
     $("#annotator-copiable-button").click(function(e) {
       if (e) e.preventDefault();
-      $(annotator.selector).toggleClass("copiable");
+      $(annotator.resultSelector).toggleClass("copiable");
     });
   }
 
@@ -889,7 +909,7 @@ class Annotator {
 
   attachHideEditorButtonEventListener() {
     var annotator = this;
-    $(".hide-btn").click(annotator.toggleEditor);
+    $(".hide-btn").click(annotator.toggleEditor());
   }
 
   attachEventHandlers() {
@@ -918,14 +938,14 @@ class Annotator {
   }
 
   /**
-   * Initializes TinyMCE. Just pass in the selector for the <textarea>
+   * Initializes annotator.tinymce. Just pass in the selector for the <textarea>
    */
-  initializeEidtor(tinyMCESelector) {
+  initializeEidtor(tinymceSelector) {
     var annotator = this;
-    if (tinymce) {
-      tinymce.init({
+    if (annotator.tinymce) {
+      annotator.tinymce.init({
         // paste_as_text: true,
-        selector: tinyMCESelector,
+        selector: tinymceSelector,
         theme: "modern",
         language: annotator.dictionary.locale,
         plugins: [
@@ -945,8 +965,6 @@ class Annotator {
 
 $(document).ready(function() {
   annotator = new Annotator();
-
-  // .hide
   annotator.annotateBySelector(".add-pinyin, .add-pinyin *", function() {
     // success
   });

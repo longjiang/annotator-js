@@ -967,10 +967,12 @@ a.mand-def-more-link {
   display: none;
 }
 
-.add-pinyin,
+#annotator-result,
 .vocab-list {
   line-height: 2;
-  margin-bottom: 3rem;
+  margin: 1rem 0 2rem 0;
+  padding: 2rem;
+  border: 1px solid #909090;
 }
 
 @media screen and (max-width: 480px) {
@@ -1237,7 +1239,6 @@ a.mand-def-more-link {
 
 .annotator-form-wrapper {
   width: 100%;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
   background: white;
   margin: 0;
   z-index: 999;
@@ -1347,7 +1348,6 @@ iframe#text_ifr {
 }
 
 .bottom-buttons {
-  margin-bottom: 1rem;
   display: -webkit-flex;
   display: flex;
   -webkit-justify-content: space-around;
@@ -1395,16 +1395,7 @@ textarea.annotator-text-area {
  ========================================================================== */
 
 @media print {
-  .pinyin-annotator .sj-header,
-  .pinyin-annotator .sj-menu,
-  .pinyin-annotator .annotator-toolbars,
-  .pinyin-annotator .comments,
-  .pinyin-annotator .sj-page__footer,
-  .pinyin-annotator .annotator-form-wrapper,
-  .pinyin-annotator .sj-page__credit {
-    display: none !important;
-  }
-  .add-pinyin {
+  #annotator-result {
     border: none;
     box-shadow: none;
     padding: 0;

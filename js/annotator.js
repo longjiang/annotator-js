@@ -114,6 +114,10 @@ class Annotator {
 
   mandBlockID = 0;
 
+  batches = []; // Batches needs to be done
+
+  doneBatches = []; // Batches that are done
+
   constructor(activeDictionary = "cedict") {
     var annotator = this;
 
@@ -328,11 +332,19 @@ class Annotator {
     $(".annotator-options input").each(function() {
       attribute = $(this).attr("name");
       if ($(this).is(":checked")) {
-        $(".mand-block-" + attribute).css("display", "");
+        annotator.showAnnotationLine(attribute);
       } else {
-        $(".mand-block-" + attribute).css("display", "none");
+        annotator.hideAnnotationLine(attribute);
       }
     });
+  }
+
+  showAnnotationLine(line) {
+    $(".mand-block-" + line).css("display", "");
+  }
+
+  hideAnnotationLine(line) {
+    $(".mand-block-" + line).css("display", "none");
   }
 
   mandBlockTemplate(wordData) {
@@ -477,7 +489,7 @@ class Annotator {
     return (avg = sum / weights.length);
   }
 
-  annotate(nodes) {
+  annotate(nodes, callback) {
     var annotator = this;
     var stringsToSend = [];
     stringsToSend = annotator.map(nodes, function(node) {
@@ -510,12 +522,17 @@ class Annotator {
               .parent()
               .toggleClass("mand-highlight");
           });
+        annotator.doneBatches.push(nodes);
+        if (annotator.batches.length === annotator.doneBatches.length) {
+          callback();
+        }
       };
     }
 
     var resourceUrl = annotator.dictionary.resourceUrl;
 
     var annotateNodesWithJSON = annotateWithJSON(nodes);
+
     $.post(
       resourceUrl,
       {
@@ -526,9 +543,8 @@ class Annotator {
     );
   }
 
-  executeAnnotationTasks() {
+  executeAnnotationTasks(callback) {
     var annotator = this;
-    var batches = [];
     var thisBatch = [];
     var numCharsSeen = 0;
     (function divideNodesIntoBatches() {
@@ -536,13 +552,13 @@ class Annotator {
         numCharsSeen += annotator.nodesToAnnotate[i].nodeValue.trim().length;
         thisBatch.push(annotator.nodesToAnnotate[i]);
         if (numCharsSeen > annotator.maxNumCharsPerRequest) {
-          batches.push(thisBatch);
+          annotator.batches.push(thisBatch);
           thisBatch = [];
           numCharsSeen = 0;
         }
       }
       if (thisBatch.length > 0) {
-        batches.push(thisBatch);
+        annotator.batches.push(thisBatch);
       }
       annotator.nodesToAnnotate = [];
     })();
@@ -550,8 +566,8 @@ class Annotator {
     (function annotateAtTimeIntervals() {
       var i = 0;
       function next() {
-        if (i < batches.length) {
-          annotator.annotate(batches[i]);
+        if (i < annotator.batches.length) {
+          annotator.annotate(annotator.batches[i], callback);
           setTimeout(next, annotator.timeout);
           i++;
         }
@@ -591,7 +607,7 @@ class Annotator {
     return true;
   }
 
-  annotateBySelector(selector) {
+  annotateBySelector(selector, callback) {
     var annotator = this;
     annotator.selector = selector;
     (function addAnnotationTasksForEachChildNodes() {
@@ -619,7 +635,7 @@ class Annotator {
       });
     })();
 
-    annotator.executeAnnotationTasks();
+    annotator.executeAnnotationTasks(callback);
   }
 
   //TODO: improve name of function
@@ -930,7 +946,8 @@ class Annotator {
 $(document).ready(function() {
   annotator = new Annotator();
 
-  annotator.annotateBySelector(".add-pinyin");
-
-  annotator.annotateBySelector(".add-pinyin *");
+  // .hide
+  annotator.annotateBySelector(".add-pinyin, .add-pinyin *", function() {
+    // success
+  });
 });

@@ -336,16 +336,18 @@ class Annotator {
     });
   }
 
-  toggleAnnotationLines(e) {
+  toggleAnnotationLines() {
     var annotator = this;
-    $(".annotator-options input").each(function() {
-      var attribute = $(this).attr("name");
-      if ($(this).is(":checked")) {
-        annotator.showAnnotationLine(attribute);
-      } else {
-        annotator.hideAnnotationLine(attribute);
-      }
-    });
+    return function(e) {
+      $(".annotator-options input").each(function() {
+        var attribute = $(this).attr("name");
+        if ($(this).is(":checked")) {
+          annotator.showAnnotationLine(attribute);
+        } else {
+          annotator.hideAnnotationLine(attribute);
+        }
+      });
+    };
   }
 
   showAnnotationLine(line) {
@@ -515,7 +517,7 @@ class Annotator {
         annotator.addTooltips();
 
         // Hide annotation lines by user preference
-        annotator.toggleAnnotationLines();
+        annotator.toggleAnnotationLines()();
 
         $(".mand-block-simplified")
           .off("click")
@@ -906,7 +908,7 @@ class Annotator {
 
   attachAnnotatorOptionsCheckboxEventListeners() {
     var annotator = this;
-    $(".annotator-options input").click(annotator.toggleAnnotationLines);
+    $(".annotator-options input").click(annotator.toggleAnnotationLines());
   }
 
   attachHideEditorButtonEventListener() {

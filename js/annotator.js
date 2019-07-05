@@ -12,8 +12,8 @@ $ = jQuery;
 class Annotator {
   resultSelector = "#annotator-result"; // Where we put the annotated text when you click "annotate"
 
-  // server = "//mand.chinesezerotohero.com";
-  server = "//mand.local:8888";
+  server = "//mand.chinesezerotohero.com";
+  // server = "//mand.local:8888";
 
   dictionaries = {
     cedict: {

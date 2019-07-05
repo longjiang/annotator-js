@@ -2,13 +2,31 @@
 
 A JavaScript library that puts pinyin on top of Chinese text.
 
-It uses the web service `http://mand.chinesezerotohero.com/api/multitextjsonv2` which I created.
+It uses the web service `https://mand.chinesezerotohero.com/api/multitextjsonv2` which I created. (Note the request only words over secured `https`.)
 
 I've coded a JavaScript+CSS library that can annotate text into pinyin. 
 
 ## Usage
 
-First, include *all* css and js included in this package on your HTML page. Any element with the class "add-pinyin" will be automatically annotated and styled:
+First, make sure to include the *non-slim* version of jQuery 3.3.1 on your HTML page:
+
+```html
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+```
+
+Then, include *all* css and js included in this package.
+
+```html
+<link rel="stylesheet" href="css/tipped.css">
+<link rel="stylesheet" href="css/annotator.css">
+```
+
+```html
+<script src="js/tipped.js"></script><!-- For popup tooltips that shows definitions. -->
+<script src="js/annotator.js"></script>
+```
+
+Any element with the class "add-pinyin" will be automatically annotated and styled:
 
 ```html
 <div class="add-pinyin">学而不思则惘</div>

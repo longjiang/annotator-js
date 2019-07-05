@@ -15,7 +15,7 @@ class Annotator {
 
     annotator.resultSelector = "#annotator-result"; // Where we put the annotated text when you click "annotate"
 
-    annotator.server = "//mand.chinesezerotohero.com";
+    annotator.server = "https://mand.chinesezerotohero.com";
     // annotator.server = "//mand.local:8888";
 
     annotator.dictionaries = {

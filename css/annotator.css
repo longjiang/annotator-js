@@ -1097,7 +1097,7 @@ a.mand-def-more-link {
   margin: 0 0.3rem;
 }
 
-/* Default Show/Hide Lines */
+/* Toggles for Show/Hide Lines */
 
 .add-pinyin .mand-block .mand-block-definition,
 .add-pinyin .mand-block .mand-block-pinyin,
@@ -1109,7 +1109,7 @@ a.mand-def-more-link {
 
 .add-pinyin .mand-block .mand-block-pinyin,
 .add-pinyin .mand-block .mand-block-simplified {
-  display: block;
+  display: block; /* These two lines are shown by default */
 }
 
 .add-pinyin.show-definition .mand-block .mand-block-definition,

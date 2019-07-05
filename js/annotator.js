@@ -12,8 +12,8 @@ $ = jQuery;
 class Annotator {
   resultSelector = "#annotator-result"; // Where we put the annotated text when you click "annotate"
 
-  server = "//mand.chinesezerotohero.com";
-  // server = "//mand.local:8888";
+  // server = "//mand.chinesezerotohero.com";
+  server = "//mand.local:8888";
 
   dictionaries = {
     cedict: {
@@ -351,11 +351,13 @@ class Annotator {
   }
 
   showAnnotationLine(line) {
-    $(".mand-block-" + line).css("display", "");
+    $(annotator.resultSelector).removeClass("hide-" + line);
+    $(annotator.resultSelector).addClass("show-" + line);
   }
 
   hideAnnotationLine(line) {
-    $(".mand-block-" + line).css("display", "none");
+    $(annotator.resultSelector).removeClass("show-" + line);
+    $(annotator.resultSelector).addClass("hide-" + line);
   }
 
   mandBlockTemplate(wordData) {
@@ -535,7 +537,9 @@ class Annotator {
           });
         annotator.doneBatches.push(nodes);
         if (annotator.batches.length === annotator.doneBatches.length) {
-          callback();
+          if (callback) {
+            callback();
+          }
         }
       };
     }

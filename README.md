@@ -6,7 +6,7 @@ It uses the web service `https://mand.chinesezerotohero.com/api/multitextjsonv2`
 
 ## Demo
 
-See the <a href="index.html">annotation in action</a>.
+See the <a href="https://longjiang.github.io/annotator-js/index.html">annotation in action</a>.
 
 ## Usage
 

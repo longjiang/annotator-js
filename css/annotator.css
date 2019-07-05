@@ -1036,7 +1036,7 @@ a.mand-def-more-link {
 .add-pinyin .mand-block {
   display: inline-block;
   text-align: center;
-  margin: 0 0.28em;
+  margin: 0 0.2rem;
   bottom: -0.35em;
   position: relative;
 }
@@ -1281,7 +1281,6 @@ a.mand-def-more-link {
 }
 
 .add-pinyin {
-  color: black;
 }
 
 .annotator-toolbars {

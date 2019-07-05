@@ -15,14 +15,14 @@ class Annotator {
 
     annotator.resultSelector = "#annotator-result"; // Where we put the annotated text when you click "annotate"
 
-    // server = "//mand.chinesezerotohero.com";
-    annotator.server = "//mand.local:8888";
+    annotator.server = "//mand.chinesezerotohero.com";
+    // annotator.server = "//mand.local:8888";
 
     annotator.dictionaries = {
       cedict: {
         locale: "en",
-        resourceUrl: this.server + "/api/multitextjsonv2",
-        addWeightUrl: this.server + "/weight/addweight?wordid=",
+        resourceUrl: annotator.server + "/api/multitextjsonv2",
+        addWeightUrl: annotator.server + "/weight/addweight?wordid=",
         dictUrl: "//www.mdbg.net/chindict/chindict.php?wdqb=",
         editUrl:
           "//cc-cedict.org/editor/editor.php?handler=InsertSimpleEntry&insertsimpleentry_old_cedict=",

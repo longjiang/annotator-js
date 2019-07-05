@@ -1022,9 +1022,8 @@ a.mand-def-more-link {
 }
 
 @media screen and (max-width: 480px) {
-  .add-pinyin {
+  #annotator-result {
     padding: 2rem;
-    /* position: absolute; */
     left: 0;
     margin-right: -31px;
     margin-left: -31px;

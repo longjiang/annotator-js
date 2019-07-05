@@ -129,7 +129,7 @@ class Annotator {
 
     annotator.primaryLine = annotator.dictionary.primaryLine;
 
-    annotator.timeout = annotator.maxNumCharsPerRequest * 0;
+    annotator.timeout = annotator.maxNumCharsPerRequest * 2;
 
     if (typeof tinymce !== "undefined") {
       // If annotator.tinymce is
@@ -538,6 +538,8 @@ class Annotator {
         annotator.doneBatches.push(nodes);
         if (annotator.batches.length === annotator.doneBatches.length) {
           if (callback) {
+            annotator.batches = []; // Clear the batches
+            annotator.doneBatches = [];
             callback();
           }
         }
@@ -588,8 +590,6 @@ class Annotator {
         }
       }
       next();
-      annotator.batches = []; // Clear the batches
-      annotator.doneBatches = [];
     })();
   }
 
